@@ -9,6 +9,7 @@ use App\Traits\Response;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Models\TransactionItem;
+use App\Models\transactionDetails;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -112,6 +113,7 @@ class TransactionController extends Controller
                 $maxtransid = Transaction::max('Transaction_Number');
                 $nexttransid = $maxtransid + 1;
                     Transaction::insert([
+
                         'cashier_ID' => $data['cashierID'],
                         'Period_ID'=>2,
                         'sub_Account_ID' => '',
@@ -149,6 +151,20 @@ $item = json_decode($itemb);
 //         'Item_Tax_Amount'=>$items->itemTaxAmount
 //     ]);
 // }
+if($data['customerName'] != null || $data['businessStyle'] != null ||
+$data['cardNumber'] != null || $data['bankCode'] != null || $data['approvalCode'] !=null){
+    transactionDetails::insert([
+        'Transaction_ID' =>  $nexttransid,
+        'CustomerName'=>$data['customerName'],
+        'Address'=>$data['address'],
+        'TIN'=>$data['TIN'],
+        'BusinessStyle'=>$data['businessStyle'],
+        'CardNumber'=>$data['cardNumber'],
+        'ApprovalCode'=>$data['approvalCode'],
+        'BankCode'=>$data['bankCode'],
+        'Type'=>$data['type']
+    ]);
+}
 foreach($item as $items){
     $transid =  $nexttransid;
     $itemnumbermax = items::max('Item_Number');
