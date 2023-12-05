@@ -1,0 +1,2010 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "VENUS POS API",
+        "version": "4.0.0"
+    },
+    "paths": {
+        "/api/verify-gift-certificate": {
+            "post": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Verify Gift Certificate",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/verifyGC",
+                "operationId": "App\\Http\\Controllers\\Api\\GiftCertificateVerificationController::verify",
+                "requestBody": {
+                    "description": "Pass GC Number and Amount",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "giftCertNum",
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "giftCertNum": {
+                                        "type": "integer",
+                                        "format": "number"
+                                    },
+                                    "amount": {
+                                        "type": "number",
+                                        "format": "number"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "number",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Cashier Login",
+                "description": "Previous Route: /enablerAPI/cashierCtrl/loginCashier",
+                "operationId": "authLogin",
+                "requestBody": {
+                    "description": "Pass cashier credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "number",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "number": {
+                                        "type": "integer",
+                                        "format": "number"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "statusCode = 1",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Login Success"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "statusCode = 0",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Invalid Login"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/check-test-del-stat": {
+            "post": {
+                "tags": [
+                    "Look Up"
+                ],
+                "summary": "Check if can test del",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/checkTestDelStat",
+                "operationId": "authLogin",
+                "requestBody": {
+                    "description": "Pass cashier credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "number",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "number": {
+                                        "type": "integer",
+                                        "format": "number"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Allowed"
+                                        },
+                                        "data": {
+                                            "type": "number",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Not Allowed"
+                                        },
+                                        "data": {
+                                            "type": "number",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/check-fuel-sale": {
+            "post": {
+                "tags": [
+                    "Look Up"
+                ],
+                "summary": "Check if can fuel sale",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/checkFuelSale",
+                "operationId": "App\\Http\\Controllers\\Api\\LookupController::checkFuelSale",
+                "requestBody": {
+                    "description": "Pass cashier credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "number",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "number": {
+                                        "type": "integer",
+                                        "format": "number"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Allowed"
+                                        },
+                                        "data": {
+                                            "type": "number",
+                                            "example": "1"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Not Allowed"
+                                        },
+                                        "data": {
+                                            "type": "number",
+                                            "example": "0"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cashier-active-shift-period": {
+            "post": {
+                "tags": [
+                    "Look Up"
+                ],
+                "summary": "Get cashier active shift period",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/getCshrActShiftPeriod",
+                "operationId": "App\\Http\\Controllers\\Api\\LookupController::getCashierActiveShiftPeriod",
+                "requestBody": {
+                    "description": "Pass cashier ID",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "cashierID"
+                                ],
+                                "properties": {
+                                    "cashierID": {
+                                        "type": "integer",
+                                        "format": "number"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Failed to retrieve period ID"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/taxes": {
+            "get": {
+                "tags": [
+                    "Look Up"
+                ],
+                "summary": "Get tax list",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/getTaxList",
+                "operationId": "App\\Http\\Controllers\\Api\\LookupController::taxes",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "string",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Failed to retrieve tax list"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/finalisations": {
+            "get": {
+                "tags": [
+                    "Look Up"
+                ],
+                "summary": "Get finalisations list",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/getAllFinalisation",
+                "operationId": "App\\Http\\Controllers\\Api\\LookupController::finalisations",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "string",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Failed to retrieve mop list"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/grades": {
+            "get": {
+                "tags": [
+                    "Look Up"
+                ],
+                "summary": "Get grades list",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/getGrades",
+                "operationId": "App\\Http\\Controllers\\Api\\LookupController::grades",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "string",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Failed to retrieve grade list"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/pos-terminal": {
+            "post": {
+                "tags": [
+                    "Look Up"
+                ],
+                "summary": "Get POS Terminal",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/getPOSTerminal",
+                "operationId": "App\\Http\\Controllers\\Api\\LookupController::receiptLayout",
+                "requestBody": {
+                    "description": "Pass POS ID",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "posID"
+                                ],
+                                "properties": {
+                                    "posID": {
+                                        "type": "integer",
+                                        "format": "number"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "number",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Failed to retrieve period ID"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/item-types": {
+            "get": {
+                "tags": [
+                    "Look Up"
+                ],
+                "summary": "Get item types",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/getItemTypes",
+                "operationId": "App\\Http\\Controllers\\Api\\LookupController::itemTypes",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "string",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Failed to retrieve item types"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/non-fuel-products": {
+            "get": {
+                "tags": [
+                    "Look Up"
+                ],
+                "summary": "Get All Non-Fuel Products",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/getAllProducts",
+                "operationId": "App\\Http\\Controllers\\Api\\LookupController::nonFuelProducts",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "string",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Failed to retrieve products"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/products": {
+            "get": {
+                "tags": [
+                    "Look Up"
+                ],
+                "summary": "Get All Products by Desciption|Barcode",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/getProductByDesc & /enablerAPI/lookUpCtrl/getProductByDesc",
+                "operationId": "App\\Http\\Controllers\\Api\\LookupController::products",
+                "parameters": [
+                    {
+                        "name": "search_type",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "default": "description",
+                                "enum": [
+                                    "description",
+                                    "barcode"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "search_value",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "string",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "No products found"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/vehicle-types": {
+            "get": {
+                "tags": [
+                    "Look Up"
+                ],
+                "summary": "Get vehicle types",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/getAllVehicleType",
+                "operationId": "App\\Http\\Controllers\\Api\\LookupController::vehicleTypes",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "string",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Failed to retrieve vehicle type / nothing to display."
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/sub-account-details": {
+            "post": {
+                "tags": [
+                    "Look Up"
+                ],
+                "summary": "Get Sub Account Details",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/getSubAccDetails",
+                "operationId": "App\\Http\\Controllers\\Api\\LookupController::subAccountDetails",
+                "requestBody": {
+                    "description": "Pass Sub Account Number",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "subAccNum"
+                                ],
+                                "properties": {
+                                    "subAccNum": {
+                                        "type": "number",
+                                        "format": "number"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "number",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "No subaccount found"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/check-price-profile-exist": {
+            "post": {
+                "tags": [
+                    "Look Up"
+                ],
+                "summary": "Check if price profile exist",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/isExistPriceProfile",
+                "operationId": "App\\Http\\Controllers\\Api\\LookupController::checkPriceProfileExist",
+                "requestBody": {
+                    "description": "",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "gradeID",
+                                    "date"
+                                ],
+                                "properties": {
+                                    "gradeID": {
+                                        "type": "number",
+                                        "format": "number"
+                                    },
+                                    "date": {
+                                        "type": "date",
+                                        "format": "date",
+                                        "example": "yyyy-mm-dd"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "number",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Price profile for grade already exists"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/check-gift-certificate": {
+            "post": {
+                "tags": [
+                    "Look Up"
+                ],
+                "summary": "Check if gift certificate exist",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/getGC",
+                "operationId": "App\\Http\\Controllers\\Api\\LookupController::checkGiftCertificate",
+                "requestBody": {
+                    "description": "",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "giftCertNum"
+                                ],
+                                "properties": {
+                                    "giftCertNum": {
+                                        "type": "string",
+                                        "format": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "number",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "No gift certificate found|Gift certificate already in use"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/refund-checker": {
+            "post": {
+                "tags": [
+                    "Look Up"
+                ],
+                "summary": "Refund Checker by Transaction number and resetter referrence",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/refundChecker",
+                "operationId": "App\\Http\\Controllers\\Api\\LookupController::refundChecker",
+                "requestBody": {
+                    "description": "",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "transaction_number",
+                                    "transaction_resetter_reference"
+                                ],
+                                "properties": {
+                                    "transaction_number": {
+                                        "type": "number",
+                                        "format": "number"
+                                    },
+                                    "transaction_resetter_reference": {
+                                        "type": "number",
+                                        "format": "number"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Transaction Number is already been refund."
+                                        },
+                                        "data": {
+                                            "type": "number",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Not found"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/discounts": {
+            "get": {
+                "tags": [
+                    "Look Up"
+                ],
+                "summary": "Get Discounts",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/getDiscountList",
+                "operationId": "App\\Http\\Controllers\\Api\\LookupController::discounts",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "string",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Discount list not found"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/current-price-profile": {
+            "get": {
+                "tags": [
+                    "Look Up"
+                ],
+                "summary": "Get current price profile",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/getCurrentPriceProfile",
+                "operationId": "App\\Http\\Controllers\\Api\\LookupController::currentPriceProfile",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "string",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "No price profile found"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reports/period": {
+            "get": {
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "Get Report by Period",
+                "description": "Previous Route: /enablerAPI/reportsCtrl/getPeriodReport",
+                "operationId": "App\\Http\\Controllers\\Api\\PeriodReportController::periodReport",
+                "parameters": [
+                    {
+                        "name": "posID",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "periodID",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "number",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Not master pos | Period details not foun | Failed to close"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reports/period-on-close": {
+            "get": {
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "Get Report Period on close",
+                "description": "Previous Route: /enablerAPI/reportsCtrl/getPeriodReportOnClose",
+                "operationId": "App\\Http\\Controllers\\Api\\PeriodReportController::periodOnClose",
+                "parameters": [
+                    {
+                        "name": "posID",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "number",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "No active period found"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reports/cdraw-history-by-cdraw-period": {
+            "get": {
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "Get Report Period on close",
+                "description": "Previous Route: /enablerAPI/reportsCtrl/getCDrawHistByCDPeriod",
+                "operationId": "App\\Http\\Controllers\\Api\\PeriodReportController::cdrawHistoryByCdrawPeriod",
+                "parameters": [
+                    {
+                        "name": "cdrawPeriodID",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "number",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "No active period found"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reports/charge-account-transaction-post-pay": {
+            "get": {
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "Get Charge Account Transaction Report Post Pay",
+                "description": "Previous Route: /enablerAPI/reportsCtrl/getChargeAccTransReportPostPay",
+                "operationId": "App\\Http\\Controllers\\Api\\PeriodReportController::getChargeAccountTransactionReportPostPay",
+                "parameters": [
+                    {
+                        "name": "periodID",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "number",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "No active period found"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/register-no-sale": {
+            "post": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Register No Sale",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/registerNoSale",
+                "operationId": "App\\Http\\Controllers\\Api\\RegisterNoSaleTransactionController::register",
+                "requestBody": {
+                    "description": "",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "cashier_id"
+                                ],
+                                "properties": {
+                                    "cashier_id": {
+                                        "type": "number",
+                                        "format": "number"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "number",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Unsuccessful"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/register-void": {
+            "post": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Register Void",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/registerVoid",
+                "operationId": "App\\Http\\Controllers\\Api\\RegisterVoidTransactionController::register",
+                "requestBody": {
+                    "description": "",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "cashier_id",
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "cashier_id": {
+                                        "type": "number",
+                                        "format": "number"
+                                    },
+                                    "amount": {
+                                        "type": "number",
+                                        "format": "number"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "number",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Unsuccessful"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/check-safe-drop-alarm-level": {
+            "post": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Verify Gift Certificate",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/checkSafeDropAlarmLevel",
+                "operationId": "App\\Http\\Controllers\\Api\\SafeDropAlarmLevelController::check",
+                "requestBody": {
+                    "description": "Pass mopID",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "mopID"
+                                ],
+                                "properties": {
+                                    "mopID": {
+                                        "type": "integer",
+                                        "format": "number"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "number",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/get-transaction": {
+            "post": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Get Transaction Data",
+                "description": "Previous Route: /enablerAPI/lookUpCtrl/getTransactionData",
+                "operationId": "App\\Http\\Controllers\\Api\\TransactionController::transactionData",
+                "requestBody": {
+                    "description": "",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "birTransNum"
+                                ],
+                                "properties": {
+                                    "birTransNum": {
+                                        "type": "integer",
+                                        "format": "number"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "number",
+                                            "example": "int|string|object|array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "number",
+                                            "example": "0"
+                                        },
+                                        "statusDescription": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "security": [
+        []
+    ]
+}
