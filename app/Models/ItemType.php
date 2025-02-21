@@ -11,7 +11,7 @@ class ItemType extends Model
 
     protected $table = 'Item_Types';
     protected $primaryKey = 'Item_Type';
-    protected $connection = 'enablerDb';
+    //protected $connection = 'enablerDb';
 
     protected $fillable = [
         'Item_Type',

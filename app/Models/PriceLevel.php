@@ -10,5 +10,5 @@ class PriceLevel extends Model
     use HasFactory;
 
     protected $table = 'Price_Levels';
-    protected $connection = 'enablerDb';
+    //protected $connection = 'enablerDb';
 }

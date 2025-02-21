@@ -11,7 +11,7 @@ class PosGradeHistory extends Model
     use HasFactory;
 
     protected $table = 'pos_grade_history';
-    protected $connection = 'enablerDb';
+    //protected $connection = 'enablerDb';
 
     /**
      * Logics

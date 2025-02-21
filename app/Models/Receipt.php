@@ -11,7 +11,7 @@ class Receipt extends Model
 
     protected $table = 'Receipt';
     protected $primaryKey = 'Receipt_ID';
-    protected $connection = 'enablerDb';
+    //protected $connection = 'enablerDb';
 
     protected $fillable = [
         'Receipt_ID',

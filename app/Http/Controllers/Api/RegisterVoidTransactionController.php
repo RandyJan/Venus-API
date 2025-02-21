@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\StoredProcedures\RegisterVoidService;
 use App\Traits\Response;
 use Illuminate\Http\Request;
+use DB;
 
 class RegisterVoidTransactionController extends Controller
 {
@@ -57,5 +58,50 @@ class RegisterVoidTransactionController extends Controller
         }
 
         return $this->response($result['message']);
+    }
+
+    public function callVoidSP(Request $request)
+    {
+        $result = $this->voidPerItem($request->posID, $request->cashierID, $request->itemID, $request->itemType, $request->itemDesc, $request->itemPrice, $request->itemQty, $request->itemValue);
+        
+        if(!$result)
+        {
+            return response(['status'=> '0'], 401);
+        }
+        else
+        {
+            return response($result);
+        }
+    }
+
+    public function voidPerItem($posID, $cashierID, $itemID, $itemType, $itemDesc, $itemPrice, $itemQty, $itemValue)
+    {
+        $result = DB::statement('EXEC sp_register_void_cv ?,?,?,?,?,?,?,?', [$cashierID, $itemValue, $posID, $itemType, $itemID,
+        $itemDesc, $itemPrice, $itemQty]);
+        if(!$result)
+        {
+            return $result;
+        }
+        else
+        {
+            return $result;
+        }
+    }
+
+    public function callMultipleVoidSP(Request $request)
+    {
+       //return response($request);
+        foreach($request->item as $voidItem)
+        {
+            $result = DB::statement('EXEC sp_register_void_cv ?,?,?,?,?,?,?,?', [$voidItem['cashierID'], $voidItem['itemValue'], $voidItem['posID'], $voidItem['itemType'], $voidItem['itemID'],
+            $voidItem['itemDesc'], $voidItem['itemPrice'], $voidItem['itemQty']]);
+
+            if(!$result)
+            {
+                return response(['status'=>'0'], 401);
+            }
+        }
+
+        return response(['status'=>'1']);
     }
 }

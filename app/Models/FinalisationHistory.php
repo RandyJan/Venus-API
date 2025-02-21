@@ -11,7 +11,7 @@ class FinalisationHistory extends Model
     use HasFactory;
 
     protected $table = 'Finalisation_History';
-    protected $connection = 'enablerDb';
+    //protected $connection = 'enablerDb';
 
     protected $fillable = [
         'MOP_ID',

@@ -42,7 +42,7 @@ class PeriodService {
         }
 
         $periodDetails = Period::getPeriodDetails($period_id);
-
+        
         if(!$periodDetails){
             return [
                 'success' => false,
@@ -57,6 +57,7 @@ class PeriodService {
         $finalisationHistory = FinalisationHistory::getFinalisationTotals($period_id);
         $cashiersTotal = CashierHistory::getCashierTotalbyPeriod($period_id);
         $transNums = PosPeriodBirTransactionNumber::getTransactionNumbers($period_id);
+        //return new PosPeriodBirTransactionNumberCollection($transNums);
         $depTaxExempt = DepartmentHistory::getDepartmentTaxExempt($period_id);
         $gradeTaxExempt = PosGradeHistory::getGradeTaxExempt($period_id);
         $taxHistory = TaxHistory::getTaxHistoryByPeriodID($period_id);
@@ -69,7 +70,8 @@ class PeriodService {
         $hoseHistData = HoseHistory::getHoseHistoryData($period_id);
         $vehicleHistData = Transaction::getVehicleTotalsByPeriod($period_id);
         $tankHistData = TankHistory::getTankHistoryByPeriod($period_id);
-
+        //return $tankHistData;
+        
         return [
             'success' => true,
             'message' => 'Success',

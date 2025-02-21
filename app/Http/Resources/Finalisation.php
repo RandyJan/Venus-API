@@ -34,6 +34,7 @@ class Finalisation extends JsonResource
 			'mopPO' => $this->MOP_PO,
 			'mopRef' => $this->MOP_Ref,
 			'mopReceiptCopyCount' => $this->MOP_ReceiptCopyCount,
+			"withDiscount"=>$this->With_Discount
         ];
     }
 }

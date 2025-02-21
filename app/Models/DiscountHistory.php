@@ -11,7 +11,7 @@ class DiscountHistory extends Model
     use HasFactory;
 
     protected $table = 'Discount_History';
-    protected $connection = 'enablerDb';
+    //protected $connection = 'enablerDb';
 
     /**
      * Logics

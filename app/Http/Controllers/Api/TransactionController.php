@@ -13,7 +13,16 @@ use App\Models\transactionDetails;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\Tax;
+use App\Models\PosTerminal;
 use App\Http\Resources\TransactionItemCollection;
+use App\Models\Receipt;
+use App\Models\CashdrawPeriod;
+use App\Models\Period;
+use App\Models\PosPeriodBirTransactionNumber as Posperiodtrans;
+use App\Models\CashierHistory;
+use App\Models\DepartmentHistory;
+use App\Models\Refund_GT as Refgt;
 
 class TransactionController extends Controller
 {
@@ -59,7 +68,7 @@ class TransactionController extends Controller
         // return $request->all();
         try{
             $transaction = Transaction::where('BIR_Trans_Number', $request->birTransNum)->first();
-
+            
             if(!$transaction){
                 throw new Exception('Not Found');
             }
@@ -98,9 +107,14 @@ class TransactionController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {        $datajson = $request->getContent();
-        $data = json_decode($datajson, true);
-
+    {       
+         Log::info($request->all());
+        // return response("test");
+       $birTransNum = null;
+       $bir_trans_resetter = 0;
+        $datajson = $request->json();
+        $data = json_encode($datajson);
+        $datab = json_decode($data);
         // $Cashier_ID = $jsondata['Cashier_ID'];
         // $POS_ID = $jsondata['POS_ID'];
         // // $Transaction_Number = $jsondata['Transaction_Number'];
@@ -109,132 +123,242 @@ class TransactionController extends Controller
         // $Tax_Total = $jsondata['Tax_Total'];
         // $Sale_Total = $jsondata['Sale_Total'];
 
-            $transactionDate = Carbon::now();
-                $maxtransid = Transaction::max('Transaction_Number');
-                $nexttransid = $maxtransid + 1;
-                    Transaction::insert([
+            // $transactionDate = Carbon::now();
+             $postransnum = PosTerminal::getTransNumber($request->posID);
+           
+             $num = $postransnum[0]->POS_Trans_Number + 1;
+            $nonBirTransNumber = $postransnum[0]->Non_BIR_Trans_Number;
+            $nonBirTransNumberResetter = $postransnum[0]->Non_BIR_Trans_Number_Reset_Counter;
+            // Log::info( $nonBirTransNumber);
+            // Log::info( $nonBirTransNumberResetter);
+            // Log::info($postransnum);
+            // return;
+            $cdrawPeriodID = CashdrawPeriod::getActiveCdrwPeriod($request->cashier_ID,$request->posID);
+            
+          //$try = json_encode($cdrawPeriodID['data']);
+            $date = Carbon::now();
+            
+            if($request->isNormalTrans){
+                $birTransNum = $postransnum[0]->BIR_Non_Fuel_Trans_Number + 1;
+                $bir_trans_resetter = $postransnum[0]->BIR_Reset_Counter;
+            }
+            else{
+                $cdrawPeriodID = CashdrawPeriod::getActiveCdrwPeriod($request->cashier_ID,$request->posID);
+                $safedropCount = 1;
+                $cdrawDetails = null;
+                $cdrawtest = $cdrawPeriodID['data']['CDraw_Period_ID'];
+                
+                if($cdrawPeriodID["result"]){
+                    $cdrawDetails = CashdrawPeriod::getCashdrawSafedropDetails( $cdrawPeriodID['data']['CDraw_Period_ID']);
+                    //return response($cdrawDetails);
+                    
+                }
+                if($cdrawDetails["result"]){
+                    $birTransNum = (int) $cdrawDetails['data'][0]['CDraw_Num_Safedrop'] + (int)1;
+                }
+                else{
+                    $birTransNum = $safedropCount;
+                }
+                
 
-                        'cashier_ID' => $data['cashierID'],
-                        'Period_ID'=>2,
-                        'sub_Account_ID' => '',
-                        'POS_ID'=> $data['posID'],
-                        'Transaction_Number'=>$nexttransid,
-                        'Transaction_Date'=> $transactionDate,
-                        'Tax_Total'=> $data['taxTotal'],
-                        'Sale_Total'=>$data['saleTotal'],
-                        'BIR_Receipt_Type'=>'',
-                        'PO_Number'=>'',
-                        'vehicleTypeID' => $data['vehicleTypeID'],
-                        'isManual' => $data['isManual'],
-                        'isZeroRated' => $data['isZeroRated'],
-                        'Discount_Total'=>'',
-                        'isRefund' => $data['isRefund'],
-              ]);
-$itemb = json_encode($data['items']);
-$item = json_decode($itemb);
+            }
+
+        $periodID =  Period::getActiveShiftPeriod();
+        // var_dump($periodID);
+        $transID = null;
+        if(!$periodID){
+            return false;
+        }
+     $transID = Transaction::addNewTransaction($request->cashierID,$request->subAccID,$request->posID,$num,$date,$periodID,$request->taxTotal,$request->saleTotal,$request->birReceiptType,$birTransNum,$request->poNum,$request->plateNum,$request->vehicleTypeID,$request->odometer,$request->isManual,$request->isZeroRated,$request->isRefund,$request->transaction_type, $request->attendantID);
+            // $maxtransid = Transaction::max('Transaction_Number');
+            
+            if($request->accountID && $request->subAccID){
+                
+                $subaccRes = TransactionItem::callLogAccountTransaction($request->accountID,$request->subAccID,$request->subAccAmt);
+            }
+            if(!$transID){
+                return response("transId is null");
+            }
+            $posTNRet = PosTerminal::updatePOSTransNum($num,$request->posID);
+            if(!$posTNRet){
+                return response('postnret is null');
+            }
+            if($request->isNormalTrans){
+             
+                if($birTransNum > 999999999){
+                    $birTransNum = 1;
+                    $bir_trans_resetter = PosTerminal::incrementBirResetCounter($request->posID,$bir_trans_resetter);
+                }
+               
+                $activePeriods = Period::getAllActivePeriod();
+                if(!$activePeriods){
+                    return response("No Active Periods");
+                }
+                for($i = 0;$i < count($activePeriods);$i++){
+                    Posperiodtrans::updateBegTransNumPerTrans($activePeriods[$i]->periodID,$request->posID,$birTransNum,$bir_trans_resetter);
+                    Posperiodtrans::updateEndingTransNumPerTrans($activePeriods[$i]->periodID,$request->posID,$birTransNum,$bir_trans_resetter);
+                }
+                if($request->birReceiptType ==1){
+                    $fuelTNRet = PosTerminal::updateBIRFuelTransNum($num,$request->posID);
+                    if(!$fuelTNRet){
+                        return response('Error fuelTNRet');
+                    }
+                }
+                if($request->birReceiptType == 2){
+                    $nFuelTNRet = PosTerminal::updateBIRNonFuelTransNum($birTransNum,$request->posID);
+                    if(!$nFuelTNRet){
+                        return response("Error nFuelTNRet");
+                    }
+                }
+                $chTransRet = CashierHistory::updateCashierHistTrans($request->cashierID,$request->saleTotal);
+                if(!$chTransRet){
+                    return response("Error chTransRet");
+                }
+
+            }
+            if($request->transRefund > 0){
+                $chRefRet = CashierHistory::updateCashierHistRefund($transID,$request->transRefund,$request->grossRefund);
+                if(!$chRefRet){
+                    return response("Error chRefret");
+                }
+            }
+
+            if($request->customerName != null || $request->address != null || $request->TIN != null || $request->businessStyle != null || $request->cardNumber != null || 
+            $request->approvalCode != null || $request->bankCode != null || $request->type != null)
+            {
+                transactionDetails::insert([
+                    'Transaction_ID' =>  $transID,
+                    'CustomerName'=>$request->customerName,
+                    'Address'=>$request->address,
+                    'TIN'=>$request->TIN,
+                    'BusinessStyle'=>$request->businessStyle,
+                    'CardNumber'=>$request->cardNumber,
+                    'ApprovalCode'=>$request->approvalCode,
+                    'BankCode'=>$request->bankCode,
+                    'Type'=>$request->type,
+                ]);
+            }
+
+            // $itemb = json_encode($data->items);
+            // $item = json_decode($itemb); // decode as an array
+            // $item = $request->items;
+             $itemcount = array($request->items);
+            // Log::info(count($itemcount));
+            // return $request->items;
+            
+            //     $test = $request->items;
+            // return $test[0]->itemDesc;
+// Log::info($item);
+$count = 0;
+// var_dump($request->items);
+foreach($request->items as $items){   
+ $items = (object)$items;
+$itemTaxID = $items->itemTaxID ?? null;
+$orignalItemValuePreTaxChange = $items->originalItemValuePreTaxChange ?? null;
+$itemDiscTotal = $items->itemDiscTotal ?? null;
+$itemDiscCodeType = $items->itemDiscCodeType ?? null;
+$itemDBPrice = $items->itemDBPrice ?? null;
+$res = TransactionItem::callTransItemsSP($transID,$items->itemNumber,$itemTaxID,$items->itemType,$items->itemDesc,$items->itemPrice,$items->itemQTY
+,$items->itemValue,$items->itemID,$items->itemTaxAmount,$items->deliveryID,$orignalItemValuePreTaxChange,$items->isTaxExemptItem,$items->isZeroRatedTaxItem,
+$request->posID,$itemDiscTotal,$itemDiscCodeType,$itemDBPrice);
+
+if($itemDiscTotal != null && abs($itemDiscTotal)>0){
+    $taxRate = Tax::getTaxRate($itemTaxID)/100;
+
+    $taxMul = 1 + $taxRate;
+    $taxDisc =  (($items->itemValue/$taxMul) * $taxRate) - ((($items->itemValue + $itemDiscTotal)/$taxMul)*$taxRate);
+    if($request->isRefund){
+        if($items->itemType == 14){
+            DepartmentHistory::logDepDiscountSP($transID,abs($items->itemQTY)*-1,abs($itemDiscTotal)*-1,1,$items->departmentID,$taxDisc * -1);
+        }
+            else if($items->itemType==2){
+                DepartmentHistory::logDepDiscountSP($transID,abs($items->itemQTY)*-1,abs($itemDiscTotal)*-1,2,$items->itemID,$taxDisc * -1);
+                
+            }
+            else if($items->itemType==53){
+                DepartmentHistory::logDepDiscountSP($transID,abs($items->itemQTY)*-1,abs($itemDiscTotal)*-1,3,$items->itemID,$taxDisc * -1);
+                
+            }
+
+            
+    }
+    else{
+        if($items->itemType == 14){
+            DepartmentHistory::logDepDiscountSP($transID,$items->itemQTY,abs($itemDiscTotal),1,$items->departmentID,$taxDisc);
+        }
+        else if($items->itemType == 2){
+            DepartmentHistory::logDepDiscountSP($transID,$items->itemQTY,abs($itemDiscTotal),2,$items->itemID,$taxDisc);
+        }
+        
+        else if($items->itemType == 53){
+            DepartmentHistory::logDepDiscountSP($transID,$items->itemQTY,abs($itemDiscTotal),3,$items->itemID,$taxDisc);
+        }
+    }
 
 
-// foreach($item as $items){
-//     $transactionIdMax = items::max('Transaction_ID');
-//     $transactionId = $transactionIdMax + 1;
-//     $itemNumberMax = items::max('Item_Number');
-//     $itemNumber= $itemNumberMax + 1;
-//     $items = items::insert([
-//         'Transaction_ID'=>$transactionId,
-//         'Item_Number'=>$itemNumber,
-//         'Item_Type'=>$items->itemType,
-//         'Item_Description'=>$items->itemDesc,
-//         'Item_price'=>$items->itemPrice,
-//         'Item_Quantity'=>$items->itemQTY,
-//         'Item_Value'=>$items->itemValue,
-//         'Item_ID'=>$items->itemID,
-//         'Item_Tax_Amount'=>$items->itemTaxAmount
-//     ]);
-// }
-if($data['customerName'] != null || $data['businessStyle'] != null ||
-$data['cardNumber'] != null || $data['bankCode'] != null || $data['approvalCode'] !=null){
-    transactionDetails::insert([
-        'Transaction_ID' =>  $nexttransid,
-        'CustomerName'=>$data['customerName'],
-        'Address'=>$data['address'],
-        'TIN'=>$data['TIN'],
-        'BusinessStyle'=>$data['businessStyle'],
-        'CardNumber'=>$data['cardNumber'],
-        'ApprovalCode'=>$data['approvalCode'],
-        'BankCode'=>$data['bankCode'],
-        'Type'=>$data['type']
-    ]);
 }
-foreach($item as $items){
-    $transid =  $nexttransid;
-    $itemnumbermax = items::max('Item_Number');
-    $itemnumber = $itemnumbermax + 1;
-    $itemTaxIdmax = items::max('Tax_ID');
-    $itemTaxId = $itemTaxIdmax = 1;
-    $itemType = $items->itemType;
-    $itemDescription = $items->itemDesc;
-    $itemPrice = $items->itemPrice;
-    $itemQty = $items->itemQTY;
-    $itemValue = $items->itemValue;
-    $itemId = $items->itemID;
-    $itemTaxAmount = $items->itemTaxAmount;
-    $deliveryId = '';
-    $originalValuePreTaxChange='';
-    $isTaxExempt ='';
-    $isZeroRatedTax = '';
-    $posId = 2;
-    $itemDisc = '';
-    $discCode = '';
-    $itemDbPrice='';
-    // Log::info();
+if($request->isRefund){
+    if($itemTaxID==1)
+{
+    $netRefund = abs($items->itemValue)-abs($itemDiscTotal);
+    Refgt::incrementVatableByPosId($request->posID,$netRefund);
+}
+if($itemTaxID ==2){
+    if($items->itemDesc != "SC Disc 5%" && $items->itemDesc != "PWD Disc 5%"){
+        $netRefund = abs($items->itemValue)-(abs($itemDiscTotal)*2);
+        Refgt::incrementVatExemptByPosId($request->posID,$netRefund);
+    }
 
-    // $insertitems = DB::exec('SP_LOG_TRANSACTION_ITEM @TRANS_ID, @ITEM_NUMBER,
-    // @ITEM_TAX_ID, @ITEM_TYPE, @ITEM_DESC, @ITEM_PRICE, @ITEM_QTY,
-    //  @ITEM_VALUE, @ITEM_ID, @ITEM_TAX_AMOUNT, @DELIVERY_ID, @original_item_value_pre_tax_change, @is_tax_exempt_item,
-    //  @is_zero_rated_tax_item,@pos_id,@ITEM_DISCOUNT_TOTAL, @discount_code_type, @item_DB_Price',[$transid, $itemnumber, $itemTaxId,$itemType,
-    //  $itemDescription, $itemPrice,$itemQty,$itemValue,$itemId,$itemTaxAmount,$deliveryId,
-    //  $originalValuePreTaxChange,$isTaxExempt,$isZeroRatedTax,$posId,$itemDisc,$discCode,$itemDbPrice]);
-  $insertitems =  DB::statement('EXEC SP_LOG_TRANSACTION_ITEM ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', [
-        $transid, $itemnumber, $itemTaxId, $itemType, $itemDescription, $itemPrice, $itemQty, $itemValue,
-        $itemId, $itemTaxAmount, $deliveryId, $originalValuePreTaxChange, $isTaxExempt, $isZeroRatedTax,
-        $posId, $itemDisc, $discCode, $itemDbPrice
-    ]);
-
+}
+if($itemTaxID == 3){
+    Refgt::incrementZeroRatedByPosId($request->posID,$items->itemValue);
 
 }
 
-               // 'cashierID' => $data['cashierID'],
-                    // 'subAccID' => '',
-                    // 'accountID' => '',
-                    // 'posID' => $data['posID'],
-                    // 'taxTotal' => $data['taxTotal'],
-                    // 'saleTotal' => $data['saleTotal'],
-                    // 'isManual' => $data['isManual'],
-                    // 'isZeroRated' => $data['isZeroRated'],
-                    // 'customerName' => '',
-                    // 'address' => '',
-                    // 'TIN' => '',
-                    // 'businessStyle' => '',
-                    // 'cardNumber' => '',
-                    // 'approvalCode' => '',
-                    // 'bankCode' => '',
-                    // 'type' => '',
-                    // 'isRefund' => $data['isRefund'],
-                    // 'transaction_type' => $data['transaction_type'],
-                    // 'isRefundOrigTransNum' => '',
-                    // 'transaction_resetter' => '',
-                    // 'birReceiptType' => '',
-                    // 'poNum' => '',
-                    // 'plateNum' =>'',
-                    // 'odometer' => '',
-                    // 'transRefund' => $data['transRefund'],
-                    // 'grossRefund' => $data['grossRefund'],
-                    // 'subAccPmt' => '',
-                    // 'vehicleTypeID' => $data['vehicleTypeID'],
-                    // 'isNormalTrans' => $data['isNormalTrans'],
-                    // Log::info($insertitems);
+}
 
-                    return response()->json([$insertitems]);
+    if($res){
+        $count++;
+    }
+}
+
+if($count != count($request->items)){
+    return response("count is not equals to itemcount");
+}
+if($request->isRefund){
+    
+    if($nonBirTransNumber < 999999999){
+     
+        $nonBirTransNumber = PosTerminal::incrementNonBirTransNumber($request->posID,$nonBirTransNumber);
+    }
+    else{
+        $nonBirTransNumber = 1;
+        $nonBirTransNumberResetter = PosTerminal::incrementNonBirResetCounter($request->posID,$nonBirTransNumberResetter);
+    }
+    
+    if((int)$request->transaction_type == 4){
+        Transaction::updateTransactionResetter($transID,$nonBirTransNumberResetter);
+    }
+    Transaction::updateTransactionNumberReference($transID,$request->isRefundOrigTransNum,$request->transaction_resetter);
+    Transaction::updateBirTransNum($transID,$nonBirTransNumber);
+    // $test = ['resetter'=>$nonBirTransNumberResetter,
+    // 'or_num'=>$nonBirTransNumber,
+    // 'transID'=>$transID];
+    
+    return response()->json(['resetter'=>$nonBirTransNumberResetter,
+            'or_num'=>$nonBirTransNumber,
+            'transID'=>$transID]);
+}
+
+if((int)$request->transaction_type == 2){
+    Transaction::updateTransactionResetter($transID,null);
+}
+if((int)$request->transaction_type == 1 || (int)$request->transaction_type == 3 ){
+    Transaction::updateTransactionResetter($transID,$bir_trans_resetter);
+}
+                    return response()->json(['resetter'=>$bir_trans_resetter,
+                                                'or_num'=>$birTransNum,
+                                                'transID'=>$transID]);
 
 
     }
@@ -245,9 +369,10 @@ foreach($item as $items){
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function getItems(Request $request)
     {
-        //
+            $response = items::where('Transaction_ID',$request->trans_ID)->get();
+            return response()->json([$response]);
     }
 
     /**
@@ -268,8 +393,47 @@ foreach($item as $items){
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function receipt_sample(Request $request){
+        $receipt = receipt::where('Receipt_ID', $request->posID)->first();
+        Log::info($receipt);
+    return response()->json($receipt);
+    }
+    public function activeTransaction(){
+        $response = TransactionItem::max('Transaction_ID');
+        return response($response);
+    }
+    public function receiptItems(Request $request){
+
+        $response = TransactionItem::where('Transaction_ID', $request->transNumber)
+        ->get();
+
+        if(!$response){
+            return response()->json([
+                'StatusCode'=> 404,
+                'message'=>'Items not found',
+                'data'=>$response
+
+            ]);
+        }
+        return response()->json(
+            $response
+        );
+    }
+    public function test($posID){
+        $POSID = $posID;
+        $ret = PosTerminal::getTransNumber($POSID);
+        return response()->json(["data"=>$ret]);
+    }
+
+    public function GetTransactionForRefund(Request $request)
     {
-        //
+        $transaction = Transaction::where('BIR_Trans_Number', $request->birTransNum)->first();
+        $transactionDetails = transactionDetails::where('Transaction_ID', $transaction->Transaction_ID)->first();
+        $transactionItems = TransactionItem::where('Transaction_ID', $transaction->Transaction_ID)->get();
+        return response()->json([
+            'transaction' => $transaction,
+            'transactionDetails' => $transactionDetails,
+            'transactionItems' => $transactionItems
+        ]);
     }
 }

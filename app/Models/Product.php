@@ -11,7 +11,7 @@ class Product extends Model
 
     protected $table = 'Products';
     protected $primaryKey = 'Product_ID';
-    protected $connection = 'enablerDb';
+    //protected $connection = 'enablerDb';
 
     protected $fillable = [
         'Product_ID',
@@ -24,5 +24,15 @@ class Product extends Model
         'SCVat',
         'Discount_Rate',
     ];
+
+    public static function getProductByDesc($key){
+        $result =static::select('Products.Product_ID as id, LTRIM(RTRIM(Product_Desc)) as "desc", Product_Price as price, Barcode.Barcode as barcode,
+        LTRIM(RTRIM(Product_Quick_Code)) as quickCode, Tax_ID as taxID, Department_ID as depID, SCVat as scVat, Discount_Rate as discRate')
+        ->where('Product_Desc','like',$key)
+        ->join("Barcode","Barcode.Product_ID = Products.Product_ID", "left")
+        ->get();
+
+   
+    }
 
 }

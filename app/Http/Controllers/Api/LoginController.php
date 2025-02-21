@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Cashier;
 use App\Http\Resources\User as ResourcesUser;
+use App\Models\cashierRole;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
 
 class LoginController extends Controller
 {
@@ -44,11 +47,17 @@ class LoginController extends Controller
      */
     public function login(Request $request){
         $user = User::login($request->number, $request->password);
-
+            $cashierRoleID = User::where('Cashier_Number', $request->number)->first('Cashier_Role_ID');
+         $cashierDetails = User::where('Cashier_Number',$request->number)->get();
+        $roleCashier = cashierRole::where('Cashier_Role_ID',$cashierRoleID->Cashier_Role_ID)->get();
+        Log::info($cashierDetails);
         return response()->json([
             'statusCode' => 1,
             'statusDescription' => 'Login Success',
-            'data' => new Cashier($user)
+            // 'data' => new Cashier($user)
+            'data'=>$roleCashier,
+            'Cashier'=>$cashierDetails
+            //'Cashier_Detailes'=> $cashierDetails
         ]);
     }
 }

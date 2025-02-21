@@ -11,7 +11,7 @@ class Discount extends Model
 
     protected $table = 'discounts';
     protected $primaryKey = 'discount_id';
-    protected $connection = 'enablerDb';
+    //protected $connection = 'enablerDb';
 
     protected $fillable = [
         'discount_id',

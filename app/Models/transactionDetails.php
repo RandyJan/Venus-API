@@ -23,4 +23,11 @@ class transactionDetails extends Model
         'Type'
 
     ];
+    public $timestamps = false;
+
+    public static function addNewTransDetail($transID, $customerName, $address, $TIN, $businessStyle,
+    $cardNumber, $approvalCode, $bankCode, $type)
+    {
+        
+    }
 }

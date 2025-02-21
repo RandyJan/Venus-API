@@ -11,7 +11,7 @@ class ManualHoseHistory extends Model
     use HasFactory;
 
     protected $table = 'Manual_Hose_History';
-    protected $connection = 'enablerDb';
+    //protected $connection = 'enablerDb';
 
     protected $fillable = [
         'Hose_ID',

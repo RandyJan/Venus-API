@@ -11,7 +11,7 @@ class VehicleType extends Model
 
     protected $table = 'VehicleType';
     protected $primaryKey = 'vehicleTypeID';
-    protected $connection = 'enablerDb';
+    //protected $connection = 'enablerDb';
 
     protected $fillable = [
         'vehicleTypeID',

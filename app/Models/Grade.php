@@ -11,7 +11,7 @@ class Grade extends Model
 
     protected $table = 'Grades';
     protected $primaryKey = 'Grade_ID';
-    protected $connection = 'enablerDb';
+    //protected $connection = 'enablerDb';
 
     protected $fillable = [
         'Grade_ID',

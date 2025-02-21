@@ -11,7 +11,7 @@ class TankHistory extends Model
     use HasFactory;
 
     protected $table = 'Tank_History';
-    protected $connection = 'enablerDb';
+    //protected $connection = 'enablerDb';
 
     /**
      * Reports

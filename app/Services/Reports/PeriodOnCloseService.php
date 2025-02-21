@@ -9,7 +9,7 @@ class PeriodOnCloseService {
     public function execute($pos_id, $type){
 
         $result = Period::getActivePeriodByType($type);
-
+        
         if(!$result){
             return [
                 'success' => false,

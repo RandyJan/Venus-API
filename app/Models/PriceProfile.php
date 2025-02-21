@@ -11,7 +11,7 @@ class PriceProfile extends Model
 
     protected $table = 'Price_Profile';
     protected $primaryKey = 'Price_Profile_ID';
-    protected $connection = 'enablerDb';
+    //protected $connection = 'enablerDb';
 
     protected $fillable = [
         'Price_Profile_ID', 'Price_Profile_Name', 'Scheduled_ST', 'Parent_Grade_ID', 'Deleted',

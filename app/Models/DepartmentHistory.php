@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use DB;
 class DepartmentHistory extends Model
 {
     use HasFactory;
 
     protected $table = 'Department_History';
-    protected $connection = 'enablerDb';
+    //protected $connection = 'enablerDb';
 
     protected $fillable = [
         'Department_ID',
@@ -54,4 +54,9 @@ class DepartmentHistory extends Model
             ->leftJoin('Departments', 'Departments.Department_ID', 'Department_History.Department_ID')
             ->get();
     }
+    public static function logDepDiscountSP($transID, $itemQty,$itemValue,$itemType,$itemID,$itemTaxAmount){
+        $result = DB::statement('EXEC sp_log_discount_item ?,?,?,?,?,?',[$transID,$itemQty,$itemValue,$itemType,$itemID,$itemTaxAmount]);
+        return $result;
+    }
+    
 }

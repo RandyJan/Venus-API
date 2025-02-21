@@ -8,6 +8,9 @@ use App\Traits\Response;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Models\CashDraw_Periods_DB;
+use App\Models\CashDrawPeriod;
+use App\Models\CashdrawHistory;
 
 class SafeDropAlarmLevelController extends Controller
 {
@@ -108,5 +111,21 @@ class SafeDropAlarmLevelController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function checkSafedropAmount(Request $request)
+    {
+        $cashdrawPeriodID = CashDraw_Periods_DB::getActiveCdrwPeriod($request->cashierID, $request->posID);
+        $retData = CashdrawHistory::getCashdrawSafedropDetails($cashdrawPeriodID->CDraw_Period_ID);
+       //return response($retData);
+       if(!$retData)
+       {
+            return response(["result" => 0, "message" => "No safedrop details available"]);
+       }
+        if($request->amount > ($retData[0]->CDraw_Tot_Amount - $retData[0]->CDraw_Tot_Safedrop))
+        {
+            return response(["result" => 0, "message" => "Not enough cash in cashdrawer"]);
+        }
+        return response(["result" => 1, "message" => "Safedrop allowed"]);
     }
 }

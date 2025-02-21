@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Models\SubAccountDisc;
 
 class SubAccount extends JsonResource
 {
@@ -12,6 +13,7 @@ class SubAccount extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
+
     public function toArray($request)
     {
         // return parent::toArray($request);
@@ -28,4 +30,6 @@ class SubAccount extends JsonResource
             'Sub_Account_Discount_Counter' => $this->Sub_Account_Discount_Counter,
         ];
     }
+
+    
 }

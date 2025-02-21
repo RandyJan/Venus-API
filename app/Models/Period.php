@@ -4,14 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use DB;
 class Period extends Model
 {
     use HasFactory;
 
     protected $table = 'Periods';
     protected $primaryKey = 'Period_ID';
-    protected $connection = 'enablerDb';
+    //protected $connection = 'enablerDb';
 
     protected $fillable = [
         'Period_ID',
@@ -44,5 +44,51 @@ class Period extends Model
         return static::where('Period_Type', $type)
             ->where('Period_State', 1)
             ->first();
+    }
+    public static function getActiveShiftPeriod(){
+        // $data = array("Period_Type" => 1,
+        //                 "Period_State"=>1);
+                        $result = static::select('Period_ID')
+                        ->where("Period_Type", 1)
+                        ->where("Period_State", 1)
+                        ->first();
+
+                        if($result){
+                            return $result->Period_ID;
+                        }
+
+                        return false;
+    }
+    public static function getAllActivePeriod(){
+          $result =   static::select("Period_ID as periodID")
+            ->where('Period_State',1)
+            ->get();
+
+            if($result)
+            {
+                return $result;
+            }
+            return false;
+
+    }
+
+    public static function getActivePeriods()
+    {
+        $result = static::where('Period_State', 1)->get();
+        if(!$result)
+        {
+            return false;
+        }
+        return $result;
+    }
+
+    public static function closePeriodSP($periodType)
+    {
+        $result = DB::statement("EXEC SP_CLOSE_POS_PERIOD @period_type= ?", [$periodType]);
+        if(!$result)
+        {
+            return false;
+        }
+        return $result;
     }
 }

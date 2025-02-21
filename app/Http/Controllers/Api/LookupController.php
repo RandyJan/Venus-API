@@ -30,6 +30,7 @@ use App\Models\Tax;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\VehicleType;
+use App\Models\Attendants;
 use App\Services\GetCashierActiveShiftPeriodService;
 use App\Services\GetGradesService;
 use App\Services\GetReceiptLayoutService;
@@ -545,7 +546,24 @@ class LookupController extends Controller
             new ProductCollection($items)
         );
     }
+ public function gasProducts(){
 
+    $response = Product::where('Department_ID', 1)->get();
+
+    if(!$response){
+        return response()->json([
+            "StatusCode"=>0,
+            "Message"=>"Product not found",
+            "data"=>[$response]
+        ]);
+    }
+
+    return response()->json([
+        'StatusCode'=>1,
+        "Message"=>"Successfully retrieved products",
+        "data"=>[$response]
+    ]);
+ }
     /**
      * @OA\Get(
      * path="/api/vehicle-types",
@@ -640,6 +658,21 @@ class LookupController extends Controller
             1,
             new SubAccountCollection($items)
         );
+    }
+
+    public function getSubAccountList(Request $request)
+    {
+        // $items = SubAccount::where('SubAcc_Blocked', 0)
+        // //->leftJoin("Sub_Account_Disc", "Sub_Account_Disc.Sub_Account_ID", "=","Sub_Accounts.SubAcc_Number")
+        // ->get();
+        $items = SubAccount::GetSubAccount();
+
+        if(count($items) == 0)
+        {
+            return response(["No sub account found", 0]);
+        }
+        
+        return response($items);
     }
 
     /**
@@ -770,6 +803,25 @@ class LookupController extends Controller
             1,
             new ResourcesGiftCertificate($gc)
         );
+    }
+
+    public function finalisationstest(){
+        $response = Finalisation::get();
+        $itemType = ItemType::where('Item_Type_Descr', 'Mop')->first('Item_Type');
+        if(!$response){
+            return response()->json([
+                "StatusCode"=>0,
+                "StatusDescription"=>"Failed",
+                "data"=>[$response]
+            ]);
+        }
+
+        return response()->json([
+            "StatusCode"=>1,
+            "StatusDescription"=>"Success",
+            "ItemType"=>$itemType->Item_Type,
+            "data"=>[$response]
+        ]);
     }
 
     /**
@@ -910,5 +962,24 @@ class LookupController extends Controller
         }
 
         return $this->response('Success', 1, new CurrentPriceProfileCollection($items));
+    }
+    // public function getProductByDesc($key){
+
+    //     $KEY = $key;
+    //     $ret = Product::get
+    // }
+
+    public function getAttendant(Request $request)
+    {
+        $result = Attendants::select('Attendant_ID', 'Attendant_Name', 'Attendant_Number')
+        ->get();
+        if(!$result || count($result) == 0)
+        {
+            return response("There's no attendant currently",401);
+        }
+        else
+        {
+            return response(["attendants" => $result]);
+        }
     }
 }

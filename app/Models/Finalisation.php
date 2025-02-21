@@ -11,7 +11,7 @@ class Finalisation extends Model
 
     protected $table = 'Finalisations';
     protected $primaryKey = 'MOP_ID';
-    protected $connection = 'enablerDb';
+    // protected $connection = 'enablerDb';
 
     protected $fillable = [
         'MOP_ID',

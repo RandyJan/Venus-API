@@ -11,7 +11,7 @@ class GiftCertificate extends Model
 
     protected $table = 'gift_cert';
     protected $primaryKey = 'giftcert_id';
-    protected $connection = 'enablerDb';
+    //protected $connection = 'enablerDb';
 
     protected $fillable = [
         'giftcert_id',

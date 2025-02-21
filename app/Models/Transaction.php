@@ -6,6 +6,8 @@ use App\Http\Resources\TransactionVehicleTotalsReportCollection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use App\Models\TransactionItem;
 
 class Transaction extends Model
 {
@@ -13,7 +15,7 @@ class Transaction extends Model
 
     protected $table = 'Transactions';
     protected $primaryKey = 'Transaction_ID';
-    protected $connection = 'enablerDb';
+   // protected $connection = 'enablerDb';
 
     protected $fillable = [
         'Cashier_ID',
@@ -61,8 +63,7 @@ class Transaction extends Model
      * Reports
      */
     public static function getTransactionHistoryData($period_id){   //refactor
-        $items = DB::connection('enablerDb')
-            ->select("
+        $items =  DB::select("
                 WITH C AS ( SELECT Transaction_ID, Transaction_Date, Period_ID, Sale_Total, BIR_Receipt_Type, isRefund,
                     Quantity = (SELECT SUM(TI.Item_Quantity) FROM Transaction_Items TI WHERE (TI.Item_Type = 2 OR TI.Item_Type = 53) AND TI.Transaction_ID = T.Transaction_ID)
                 FROM Transactions T
@@ -75,10 +76,49 @@ class Transaction extends Model
                         as saleTotal,
                         sum(Quantity) as Quantity
                 FROM C
-                WHERE Period_ID = {$period_id} AND BIR_Receipt_Type is not null
+                WHERE Period_ID = ? AND BIR_Receipt_Type is not null
                 GROUP BY DATEADD(hour, DATEDIFF(hour, 0, Transaction_Date), 0)
                 ORDER BY TransactionHour ASC
-            ");
+            ", [$period_id]);
+
+        // $items = static::with(['TransactionItem' => function ($query) {
+        //     $query->where(function ($q) {
+        //         $q->where('Item_Type', 2)
+        //           ->orWhere('Item_Type', 53);
+        //     })->selectRaw('SUM(Item_Quantity) as totalQuantity');
+        // }])->get();
+
+        //return $items;
+        
+        // ->select(
+        //     DB::raw('CONCAT(DATE(Transaction_Date), " ", LPAD(HOUR(Transaction_Date), 2, "0"), ":00:00") AS TransactionHour'),
+        //     DB::raw('COUNT(Transaction_ID) as transCount'),
+        //     DB::raw('SUM(Sale_Total) as saleTotal'),
+        // )
+        // ->where('Period_ID', $period_id)
+        // ->whereNotNull('BIR_Receipt_Type')
+        // ->groupBy('TransactionHour')
+        // ->orderBy('TransactionHour', 'ASC')
+        // ->get();
+        $ttid = TransactionItem::All();
+        $items = [];
+        foreach($ttid as $test)
+        {
+          $item = TransactionItem::selectRaw('SUM(Item_Quantity) as totalQuantity')->where(function($q){$q->where("Item_Type", 2)->orwhere("Item_Type", 53);})->where("Transaction_ID", $test->Transaction_ID)->get();
+          if($item)
+          {
+              array_push($items, $item);
+          }  
+        }
+        return $items;
+        // foreach($ttid as $item)
+        // {
+
+        //     $items = static::select('Transaction_ID', 'Transaction_Date', 'Period_ID', 'Sale_Total', 'BIR_Receipt_Type', 'isRefund')->where("Quantity", $item->qValue)->get();
+        // }
+        
+            
+
         $transactionHistoryHourDataForRefunds = (new self)->getTransHistHourDataForRefund($period_id);
 
 
@@ -158,4 +198,86 @@ class Transaction extends Model
 
     }
 
+    public static function addNewTransaction($cashierID,$subAccID,$posID,$num,$date,$periodID,$taxTotal,
+    $saleTotal,$birReceiptType,$birTransNum,$poNum,$plateNum,$vehicleTypeID,$odometer,$isManual,$isZeroRated,$isRefund,$transaction_type, $attendantID){
+
+       $result = static::insert([
+
+            "Cashier_ID"=>$cashierID,
+            "Sub_Account_ID" => $subAccID,
+            "POS_ID"=>$posID,
+            "Transaction_Number"=>$num,
+            "Transaction_Date"=>$date,
+            "Period_ID"=>$periodID,
+            "Tax_Total"=>$taxTotal,
+            "Sale_Total"=>$saleTotal,
+            "BIR_Receipt_Type"=>$birReceiptType,
+            "BIR_Trans_Number"=>$birTransNum,
+            "PO_Number"=>$poNum,
+            "Plate_Number"=>$plateNum,
+            "VehicleTypeID"=>$vehicleTypeID,
+            "Odometer"=>$odometer,
+            "isManual"=>$isManual,
+            "isZeroRated"=>$isZeroRated,
+            "isRefund"=>$isRefund,
+            "Transaction_Type"=>$transaction_type,
+            "attendant_ID" => $attendantID
+            
+        ]);
+        $id = static::max('Transaction_ID');
+        if(!$id){
+            return false;
+        }
+        return $id;
+
+    }
+    public static function updateTransactionResetter($transID,$val){
+        $result = static::where('Transaction_ID',$transID)
+        ->update(['transaction_resetter'=>$val]);
+        if($result){
+            return true;
+        }
+        return false;
+    }
+    public static function updateTransactionNumberReference($transID,$val,$transaction_resetter){
+
+        $result = static::where('Transaction_ID',$transID)
+        ->update(['transaction_number_reference'=>$val,
+                    'transaction_resetter_reference'=>$transaction_resetter]);
+                    if($result){
+                        return true;
+                    }
+                    return false;
+    }
+    public static function updateBirTransNum($transID,$val){
+        $result = static::where('Transaction_ID',$transID)
+        ->update(['BIR_Trans_Number'=>$val]);
+        if($result){
+            return true;
+        }
+        return false; 
+
+    }
+
+    public static function getRefundTransactions($dateFrom, $dateTo)
+    {     
+        $result = static::select(DB::raw("Transactions.Transaction_ID, Transactions.Cashier_ID, Cashiers.Cashier_Name, Transactions.POS_ID, Transactions.Transaction_Date, Transactions.Sale_Total"))
+        ->whereDate("Transaction_Date", ">=", $dateFrom)
+        ->whereDate("Transaction_Date", "<=", $dateTo)
+ //       ->whereBetween("Transaction_Date", [$dateFrom, $dateTo])
+        ->where("isRefund", 1)
+        ->leftjoin("Cashiers", "Transactions.Cashier_ID", "Cashiers.Cashier_ID")
+        ->get();
+        if(!$result)
+        {
+            return false;
+        }
+
+        
+        return $result;
+    }
+   
+
+
+public $timestamps = false;
 }

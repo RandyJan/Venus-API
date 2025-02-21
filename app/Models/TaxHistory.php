@@ -11,7 +11,7 @@ class TaxHistory extends Model
     use HasFactory;
 
     protected $table = 'Tax_History';
-    protected $connection = 'enablerDb';
+    //protected $connection = 'enablerDb';
 
     protected $fillable = [
         'Tax_ID',

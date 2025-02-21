@@ -14,7 +14,7 @@ class User extends Authenticatable
 
     protected $table = 'Cashiers';
     protected $primaryKey = 'Cashier_ID';
-    protected $connection = 'enablerDb';
+    //protected $connection = 'enablerDb';
 
     /**
      * The attributes that are mass assignable.
@@ -34,6 +34,7 @@ class User extends Authenticatable
     protected $hidden = [
         // 'password',
         // 'remember_token',
+        'Cashier_Psw'
     ];
 
     /**
@@ -46,9 +47,9 @@ class User extends Authenticatable
     ];
 
     protected $appends = [
-        'cashier_name',
-        'test_del',
-        'bof',
+        'Cashier_Name',
+        // 'test_del',
+        // 'bof',
     ];
 
     /**
@@ -57,12 +58,12 @@ class User extends Authenticatable
     public function getCashierNameAttribute(){
         return trim($this->attributes['Cashier_Name']);
     }
-    public function getTestDelAttribute(){
-        return trim($this->attributes['Cashier_Test_Del']);
-    }
-    public function getBofAttribute(){
-        return trim($this->attributes['Cashier_BOF']);
-    }
+    // public function getTestDelAttribute(){
+    //     return trim($this->attributes['Cashier_Test_Del']);
+    // }
+    // public function getBofAttribute(){
+    //     return trim($this->attributes['Cashier_BOF']);
+    // }
 
     /**
      * Logic

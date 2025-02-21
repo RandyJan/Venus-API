@@ -11,7 +11,7 @@ class Tax extends Model
 
     protected $table = 'Taxes';
     protected $primaryKey = 'Tax_ID';
-    protected $connection = 'enablerDb';
+   // protected $connection = 'enablerDb';
 
     protected $appends = [
         'tax_name',
@@ -27,5 +27,14 @@ class Tax extends Model
 
     public function getTaxLegendAttribute(){
         return trim($this->attributes['Tax_Legend']);
+    }
+    public static function getTaxRate($taxID){
+        $result = static::select('Tax_Rate')
+        ->where('Tax_ID',$taxID)
+        ->first();
+        if($result){
+            return $result->Tax_rate;
+        }
+        return false;
     }
 }

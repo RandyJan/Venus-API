@@ -19,7 +19,8 @@ class CheckSafeDropAlamLevelService {
         if(!$data){
             return [
                 'success' => false,
-                'message' => 'No Safedrop Alarm Found'
+                'message' => 'No Safedrop Alarm Found',
+                // 'test'=>$data
             ];
         }
 

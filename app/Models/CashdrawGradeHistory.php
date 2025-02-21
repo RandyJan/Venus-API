@@ -11,7 +11,7 @@ class CashdrawGradeHistory extends Model
     use HasFactory;
 
     protected $table = 'CDrawGrade_History';
-    protected $connection = 'enablerDb';
+    //protected $connection = 'enablerDb';
 
     protected $fillable = [
         'CDraw_Period_ID',
@@ -29,7 +29,7 @@ class CashdrawGradeHistory extends Model
      * Logics
      */
     public static function getCDrawGradeHistByCDPeriodID($cdraw_period_id){
-        return static::select(DB::raw("CDrawGrade_History.Grade_ID, Grade_Name, CDrawGrade_Trs, CDrawGrade_Vol, CDrawGrade_Val"))
+        return static::select(DB::raw("CDrawGrade_History.Grade_ID, Grade_Name, CDrawGrade_Trs, CDrawGrade_Vol, CDrawGrade_Val, CDrawGrade_Vol_Disc, CDrawGrade_Val_Disc, CDrawGrade_Vol_Ref, CDrawGrade_Val_Ref"))
             ->where('CDraw_Period_ID', $cdraw_period_id)
             ->leftJoin('Grades', 'Grades.Grade_ID', 'CDrawGrade_History.Grade_ID')
             ->get();
